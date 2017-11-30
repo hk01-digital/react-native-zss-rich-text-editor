@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import {ListView, View, TouchableOpacity, Image, StyleSheet, Dimensions} from 'react-native';
 import {actions} from './const';
 import ImagePicker from 'react-native-image-crop-picker'
+import TextEditorRedux from '../../../node_modules/react-native-zss-rich-text-editor/Redux/TextEditorRedux'
+import { connect } from 'react-redux'
 
 const defaultActions = [
   actions.insertImage,
@@ -36,8 +38,18 @@ function getDefaultIcon() {
   return texts;
 }
 
+type Props = {
+  navigation: Object,
+  accountId: number,
+  hasError: boolean,
+  errorMessage: string,
+  uploadImage: Function,
+}
 
-export default class RichTextToolbar extends Component {
+type State = {
+}
+
+class RichTextToolbar extends Component {
   imageCounter: number
   imageGroupCounter: number
 
@@ -159,7 +171,8 @@ export default class RichTextToolbar extends Component {
       includeBase64: true,
       mediaType: 'photo',
       compressImageMaxWidth: 500,
-      compressImageMaxHeight: 500
+      compressImageMaxHeight: 500,
+      smartAlbums: ['UserLibrary'],
     }).then(images => {
 
       const closeImageData =
@@ -194,6 +207,8 @@ export default class RichTextToolbar extends Component {
       images.map(image => {
         image.src = 'data:image/png;base64,' + image.data
         image.data = undefined
+
+        this.props.uploadImage(image);
         
         // calculate correct image size for display
         let ratio = image.width / image.height
@@ -302,3 +317,21 @@ const styles = StyleSheet.create({
   },
   defaultUnselectedButton: {},
 });
+
+const mapDispatchToProps = dispatch => {
+  return {
+    uploadImage: (image = null) =>
+      dispatch(TextEditorRedux.textEditorRequest(image)),
+  }
+}
+
+const mapStateToProps = (state, props) => {
+  return {
+    fetching: state.textEditor.get('fetching'),
+    imgId: state.textEditor.get('imgId'),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(
+  RichTextToolbar
+)
