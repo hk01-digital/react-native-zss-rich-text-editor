@@ -203,16 +203,20 @@ class RichTextToolbar extends Component {
     const width = 360
     const height = 480
 
-    this.insertAndUploadImage(
-      {},
-      editor,
-      this.randomIdentifier(),
-      groupId,
-      photoPath,
-      photoData,
-      width,
-      height
-    )
+    // do focus and settimeout
+    editor.focusContent();
+    setTimeout(() => {
+      this.insertAndUploadImage(
+        {},
+        editor,
+        this.randomIdentifier(),
+        groupId,
+        photoPath,
+        photoData,
+        width,
+        height
+      )
+    }, 100)
   }
 
   onVideoAdded = (videoData) => {
@@ -227,7 +231,11 @@ class RichTextToolbar extends Component {
     image.mediaId = mediaId
     image.width = '100%'
 
-    editor.insertImage(image, closeImageData, true)
+    // do focus and settimeout
+    editor.focusContent();
+    setTimeout(() => {
+      editor.insertImage(image, closeImageData, true)
+    }, 100)
   }
   
   onPressAddImage = () => {
@@ -243,18 +251,22 @@ class RichTextToolbar extends Component {
       this.props.onPhotoSelected && this.props.onPhotoSelected()
       let groupId = this.randomIdentifier()
 
-      images.reverse().map(image => {
-        this.insertAndUploadImage(
-          image,
-          editor,
-          this.randomIdentifier(),
-          groupId,
-          image.path,
-          image.data,
-          image.width,
-          image.height
-        )
-      })
+      // do focus and settimeout
+      editor.focusContent();
+      setTimeout(() => {
+        images.reverse().map(image => {
+          this.insertAndUploadImage(
+            image,
+            editor,
+            this.randomIdentifier(),
+            groupId,
+            image.path,
+            image.data,
+            image.width,
+            image.height
+          )
+        })
+      }, 100)
     }).catch(error => {
       // ignore cancel album error
       if (error.toString().indexOf('cancelled image selection') === -1) {
