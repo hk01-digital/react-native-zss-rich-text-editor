@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ListView, View, TouchableOpacity, Image, StyleSheet, Dimensions} from 'react-native';
+import {ListView, View, TouchableOpacity, Image, StyleSheet, Dimensions, Platform} from 'react-native';
 import {actions} from './const';
 import ImagePicker from 'react-native-image-crop-picker'
 import TextEditorRedux from '../../../node_modules/react-native-zss-rich-text-editor/Redux/TextEditorRedux'
@@ -203,9 +203,22 @@ class RichTextToolbar extends Component {
     const width = 360
     const height = 480
 
-    // do focus and settimeout
-    editor.focusContent();
-    setTimeout(() => {
+    // focus and settimeout is needed by ios to ensure insert success
+    if (Platform.OS === 'ios') {
+      editor.focusContent();
+      setTimeout(() => {
+        this.insertAndUploadImage(
+          {},
+          editor,
+          this.randomIdentifier(),
+          groupId,
+          photoPath,
+          photoData,
+          width,
+          height
+        )
+      }, 100)
+    } else {
       this.insertAndUploadImage(
         {},
         editor,
@@ -216,7 +229,7 @@ class RichTextToolbar extends Component {
         width,
         height
       )
-    }, 100)
+    }
   }
 
   onVideoAdded = (videoData) => {
@@ -231,11 +244,15 @@ class RichTextToolbar extends Component {
     image.mediaId = mediaId
     image.width = '100%'
 
-    // do focus and settimeout
-    editor.focusContent();
-    setTimeout(() => {
+    // focus and settimeout is needed by ios to ensure insert success
+    if (Platform.OS === 'ios') {
+      editor.focusContent();
+      setTimeout(() => {
+        editor.insertImage(image, closeImageData, true)
+      }, 100)
+    } else {
       editor.insertImage(image, closeImageData, true)
-    }, 100)
+    }
   }
   
   onPressAddImage = () => {
@@ -251,9 +268,24 @@ class RichTextToolbar extends Component {
       this.props.onPhotoSelected && this.props.onPhotoSelected()
       let groupId = this.randomIdentifier()
 
-      // do focus and settimeout
-      editor.focusContent();
-      setTimeout(() => {
+    // focus and settimeout is needed by ios to ensure insert success
+      if (Platform.OS === 'ios') {
+        editor.focusContent();
+        setTimeout(() => {
+          images.reverse().map(image => {
+            this.insertAndUploadImage(
+              image,
+              editor,
+              this.randomIdentifier(),
+              groupId,
+              image.path,
+              image.data,
+              image.width,
+              image.height
+            )
+          })
+        }, 100)
+      } else {
         images.reverse().map(image => {
           this.insertAndUploadImage(
             image,
@@ -266,7 +298,7 @@ class RichTextToolbar extends Component {
             image.height
           )
         })
-      }, 100)
+      }
     }).catch(error => {
       // ignore cancel album error
       if (error.toString().indexOf('cancelled image selection') === -1) {
