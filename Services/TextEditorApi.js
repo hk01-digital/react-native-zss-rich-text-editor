@@ -33,9 +33,12 @@ const create = (baseURL = Config.UGC_API_BASE_URL): ApiClient => {
 
     images.map(image => {
       data.append('images[]', {
-        uri: image.path, 
-        name: image.filename, 
-        type: image.mime? image.mime : 'image/jpeg'
+        uri: image.path,
+        // name is required by spec, but not used by backend
+        // avoid using real filename here because non-ascii character will crash
+        // https://tools.ietf.org/html/rfc7578#section-4.2
+        name: 'filename',
+        type: image.mime ? image.mime : 'image/jpeg'
       })
     })
 
