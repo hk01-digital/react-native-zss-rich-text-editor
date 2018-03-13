@@ -203,7 +203,7 @@ class RichTextToolbar extends Component {
     const width = 360
     const height = 480
 
-    // do focus and settimeout for ios
+    // focus and settimeout is needed by ios to ensure insert success
     if (Platform.OS === 'ios') {
       editor.focusContent();
       setTimeout(() => {
@@ -244,7 +244,7 @@ class RichTextToolbar extends Component {
     image.mediaId = mediaId
     image.width = '100%'
 
-    // do focus and settimeout for ios
+    // focus and settimeout is needed by ios to ensure insert success
     if (Platform.OS === 'ios') {
       editor.focusContent();
       setTimeout(() => {
@@ -268,7 +268,7 @@ class RichTextToolbar extends Component {
       this.props.onPhotoSelected && this.props.onPhotoSelected()
       let groupId = this.randomIdentifier()
 
-      // do focus and settimeout for ios
+    // focus and settimeout is needed by ios to ensure insert success
       if (Platform.OS === 'ios') {
         editor.focusContent();
         setTimeout(() => {
