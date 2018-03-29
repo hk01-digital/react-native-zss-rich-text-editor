@@ -63,7 +63,7 @@ class RichTextToolbar extends Component {
     getEditor: PropTypes.func.isRequired,
     actions: PropTypes.array,
     onPressAddLink: PropTypes.func,
-    onPressAddImage: PropTypes.func,
+    onAddImagePressed: PropTypes.func,
     onVideoBtnPressed: PropTypes.func,
     onCameraBtnPressed: PropTypes.func,
     onHashTagBtnPressed: PropTypes.func,
@@ -254,38 +254,16 @@ class RichTextToolbar extends Component {
       editor.insertImage(image, closeImageData, true)
     }
   }
-  
-  onPressAddImage = () => {
+
+  onImagePicked = (images) => {
     const editor = this.props.getEditor();
-    ImagePicker.openPicker({
-      multiple: true,
-      includeBase64: true,
-      mediaType: 'photo',
-      compressImageMaxWidth: 500,
-      compressImageMaxHeight: 500,
-      smartAlbums: ['UserLibrary'],
-    }).then(images => {
-      this.props.onPhotoSelected && this.props.onPhotoSelected()
-      let groupId = this.randomIdentifier()
+    this.props.onPhotoSelected && this.props.onPhotoSelected()
+    let groupId = this.randomIdentifier()
 
     // focus and settimeout is needed by ios to ensure insert success
-      if (Platform.OS === 'ios') {
-        editor.focusContent();
-        setTimeout(() => {
-          images.reverse().map(image => {
-            this.insertAndUploadImage(
-              image,
-              editor,
-              this.randomIdentifier(),
-              groupId,
-              image.path,
-              image.data,
-              image.width,
-              image.height
-            )
-          })
-        }, 100)
-      } else {
+    if (Platform.OS === 'ios') {
+      editor.focusContent();
+      setTimeout(() => {
         images.reverse().map(image => {
           this.insertAndUploadImage(
             image,
@@ -298,16 +276,21 @@ class RichTextToolbar extends Component {
             image.height
           )
         })
-      }
-    }).catch(error => {
-      // ignore cancel album error
-      if (error.toString().indexOf('cancelled image selection') === -1) {
-        const { onAlbumPermissionShowed } = this.props
-        if (onAlbumPermissionShowed) {
-          onAlbumPermissionShowed()
-        }
-      }
-    })
+      }, 100)
+    } else {
+      images.reverse().map(image => {
+        this.insertAndUploadImage(
+          image,
+          editor,
+          this.randomIdentifier(),
+          groupId,
+          image.path,
+          image.data,
+          image.width,
+          image.height
+        )
+      })
+    }
   }
 
   insertAndUploadImage = (
@@ -424,7 +407,7 @@ class RichTextToolbar extends Component {
         break;
       case actions.insertImage:
         this.state.editor.prepareInsert();
-        this.onPressAddImage();
+        this.props.onAddImagePressed();
         break;
       case actions.takeVideo:
         this.state.editor.prepareInsert();
