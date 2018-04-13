@@ -1434,9 +1434,9 @@
 
 				// create imageGroupContainer if not existed
 				if ($('#'+imageGroupContainerId).length == 0) {
-					var imageGroupContainer = $('<div><div class="imageGroupContainer" id="'+imageGroupContainerId+'">'+
+					var imageGroupContainer = $('<div><div class="imageGroupContainer" id="'+imageGroupContainerId+'" contenteditable="false">'+
 						'<input width='+width+' height='+height+' id="'+addImageButtonId+'" class="gridImageContainer" type="image" src="'+addImageData+'">'+
-						'</div></div>');
+						'</div><br><p></p></div>');
 					setHTML('zss_editor_content', imageGroupContainer.html())
 				}
 			}
