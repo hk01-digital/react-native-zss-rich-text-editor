@@ -528,7 +528,6 @@ const mapStateToProps = (state, props) => {
   const failedList = state.textEditor.get('uploadFailed')
   return {
     uploadFailedList: failedList.toJS(),
-    failedCount: state.textEditor.get('failedCount'),
     imgUrl: state.textEditor.get('imgUrl'),
     mediaId: state.textEditor.get('mediaId'),
     imgLocalId: state.textEditor.get('imgLocalId'),

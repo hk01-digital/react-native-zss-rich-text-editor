@@ -18,13 +18,13 @@ export default Creators
 
 export const INITIAL_STATE = Map({
   data: Map(),
+  uploadImageCount: 0,
   uploading: List(),
   uploaded: List(),
   uploadFailed: List(),
   hasError: null,
   errorMessage: '',
   isCompleted: true,
-  failedCount: 0
 })
 
 /* ------------- Reducers ------------- */
@@ -37,7 +37,9 @@ export const request = (state, { images }) => {
     .set('uploading', List())
     .set('uploaded', List())
     .set('uploadFailed', List())
+    .set('uploadImageCount', 0)
   }
+  const uploadImageCount = state.get('uploadImageCount')
   let uploadingImages = state.get('uploading')
   images.map(image => {
     if (!R.isNil(image.localId)) {
@@ -45,9 +47,8 @@ export const request = (state, { images }) => {
     }
   })
   return state.set('uploading', List(uploadingImages))
-  // reset failedCount
   .set('isCompleted', false)
-  .set('failedCount', 0)
+  .set('uploadImageCount', uploadImageCount + 1)
 }
 
 export const success = (
@@ -93,13 +94,13 @@ export const clearImageData = ( state ) => {
 }
 
 const checkIfUploadCompleted = ( state ) => {
-  let uploadingImages = state.get('uploading')
+  const uploadImageCount = state.get('uploadImageCount')
   let uploadedImages = state.get('uploaded')
   let uploadFailedImages = state.get('uploadFailed')
 
   // upload success
-  if (uploadingImages.size === uploadedImages.size + uploadFailedImages.size) {
-    return state.set('failedCount', uploadFailedImages.size)
+  if (uploadImageCount === uploadedImages.size + uploadFailedImages.size) {
+    return state
     .set('isCompleted', true)
   }
   return state
