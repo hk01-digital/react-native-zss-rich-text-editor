@@ -605,17 +605,15 @@ export default class RichTextEditor extends Component {
     this._sendAction(actions.setPlatform, Platform.OS);
   }
 
+  removeImageWithId(imageId) {
+    this._sendAction(actions.removeImageWithId, imageId);
+  }
+
   async getTitleHtml() {
     return new Promise((resolve, reject) => {
       this.titleResolve = resolve;
       this.titleReject = reject;
       this._sendAction(actions.getTitleHtml);
-
-      this.pendingTitleHtml = setTimeout(() => {
-        if (this.titleReject) {
-          this.titleReject('timeout')
-        }
-      }, 5000);
     });
   }
 
@@ -624,12 +622,6 @@ export default class RichTextEditor extends Component {
       this.titleTextResolve = resolve;
       this.titleTextReject = reject;
       this._sendAction(actions.getTitleText);
-
-      this.pendingTitleText = setTimeout(() => {
-        if (this.titleTextReject) {
-          this.titleTextReject('timeout');
-        }
-      }, 5000);
     });
   }
 
@@ -638,12 +630,6 @@ export default class RichTextEditor extends Component {
       this.contentResolve = resolve;
       this.contentReject = reject;
       this._sendAction(actions.getContentHtml);
-
-      this.pendingContentHtml = setTimeout(() => {
-        if (this.contentReject) {
-          this.contentReject('timeout')
-        }
-      }, 5000);
     });
   }
 
@@ -652,12 +638,6 @@ export default class RichTextEditor extends Component {
       this.selectedTextResolve = resolve;
       this.selectedTextReject = reject;
       this._sendAction(actions.getSelectedText);
-
-      this.pendingSelectedText = setTimeout(() => {
-        if (this.selectedTextReject) {
-          this.selectedTextReject('timeout')
-        }
-      }, 5000);
     });
   } 
   

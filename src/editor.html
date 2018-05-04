@@ -909,11 +909,7 @@
 					var nodeName = e.target.nodeName.toLowerCase();
 					if (nodeName === "input") {
 						var id = e.target.id;
-						var data = $('#'+id).attr('data');
-						// check if input is related to close button
-						if (data.indexOf('imageContainer' >= 0)) {
-							$('#'+data).remove();
-						}
+						zss_editor.removeImageWithId(id)
 					}
 
 					zss_editor.isDragging = false;
@@ -949,6 +945,15 @@
 					WebViewBridge.send(JSON.stringify({type: 'ZSS_INITIALIZED'}))
 				}, 20);
 			}//end
+
+			zss_editor.removeImageWithId = function removeImageWithId(imageId) {
+				zss_editor.debug('removeImageWithId : '+imageId)
+				var data = $('#'+imageId).attr('data');
+				// check if input is related to close button
+				if (data.indexOf('imageContainer' >= 0)) {
+					$('#'+data).remove();
+				}
+			}
 
 			function notifyIfSelectedTextHasChanged() {
 				var selectedTextChangeMessage = JSON.stringify({

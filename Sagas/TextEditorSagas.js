@@ -12,13 +12,14 @@ export function * uploadImage (api, { images }) {
     const response = yield call(api.uploadImage, images)
     const imageResponse = path(['data', 'images'], response) 
     
+    const imgLocalId = prop('localId', images[0])
+
     if (response.ok && Array.isArray(imageResponse)) {
       const imageInfo = imageResponse.length > 0? imageResponse[0] : {}
       let imgUrls = []
   
       const imgUrl = prop('url', imageInfo)
       const mediaId = prop('mediaId', imageInfo)
-      const imgLocalId = prop('localId', images[0])
 
       yield put(
         TextEditorActions.textEditorSuccess(
@@ -34,7 +35,8 @@ export function * uploadImage (api, { images }) {
       console.log('uploadImage error :', response)
       yield put(
         TextEditorActions.textEditorFailure(
-          pathOr(null, ['data'], response)
+          pathOr(null, ['data'], response),
+          imgLocalId
         )
       )
     }
