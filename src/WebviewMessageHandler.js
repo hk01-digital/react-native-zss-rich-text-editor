@@ -185,6 +185,9 @@ export const InjectedMessageHandler = `
         case '${actions.createGridImageGroup}':
           zss_editor.createGridImageGroup(action.data);
           break;  
+        case '${actions.removeImageWithId}':
+          zss_editor.removeImageWithId(action.data);
+          break;  
       }
     };
   }

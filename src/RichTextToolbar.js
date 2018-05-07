@@ -6,6 +6,8 @@ import ImagePicker from 'react-native-image-crop-picker'
 import TextEditorRedux from '../../../node_modules/react-native-zss-rich-text-editor/Redux/TextEditorRedux'
 import { connect } from 'react-redux'
 import parse5 from 'react-native-parse-html'
+import I18n from 'react-native-i18n'
+import * as R from 'ramda'
 
 const defaultActions = [
   actions.insertImage,
@@ -54,6 +56,8 @@ type Props = {
   hasTags: boolean,
   imagePerRow: number,
   imageGapWidth: number,
+  isCompleted: boolean,
+  uploadFailedList: Array<string>
 }
 
 class RichTextToolbar extends Component {
@@ -68,7 +72,8 @@ class RichTextToolbar extends Component {
     onCameraBtnPressed: PropTypes.func,
     onHashTagBtnPressed: PropTypes.func,
     onAlbumPermissionShowed: PropTypes.func,
-    onPhotoSelected: PropTypes.func,
+    showToastr: PropTypes.func,
+    onUploadCompleted: PropTypes.func,
     selectedButtonStyle: PropTypes.object,
     iconTint: PropTypes.any,
     selectedIconTint: PropTypes.any,
@@ -88,6 +93,24 @@ class RichTextToolbar extends Component {
       actions,
       ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.getRows(actions, []))
     };
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (!this.props.isCompleted && nextProps.isCompleted) {
+
+      const editor = this.props.getEditor();
+      const failedList = nextProps.uploadFailedList
+
+      if (!R.isEmpty(failedList)) {
+        failedList.map( imageId => {
+          editor.removeImageWithId('closeButton'+imageId)
+        })
+
+        this.props.showToastr(I18n.t('ugcImageUploadFailedMessage', {count: failedList.length}), 'ERROR')
+      }
+      
+      this.props.onUploadCompleted && this.props.onUploadCompleted()
+    }
   }
 
   componentDidReceiveProps(newProps) {
@@ -255,7 +278,6 @@ class RichTextToolbar extends Component {
 
   onImagePicked = (images) => {
     const editor = this.props.getEditor();
-    this.props.onPhotoSelected && this.props.onPhotoSelected()
     let groupId = this.randomIdentifier()
 
     // settimeout is needed by ios to ensure insert success
@@ -503,12 +525,14 @@ const mapDispatchToProps = dispatch => {
 }
 
 const mapStateToProps = (state, props) => {
+  const failedList = state.textEditor.get('uploadFailed')
   return {
-    fetching: state.textEditor.get('fetching'),
+    uploadFailedList: failedList.toJS(),
     imgUrl: state.textEditor.get('imgUrl'),
     mediaId: state.textEditor.get('mediaId'),
     imgLocalId: state.textEditor.get('imgLocalId'),
     errorMessage: state.textEditor.get('errorMessage'),
+    isCompleted: state.textEditor.get('isCompleted'),
   }
 }
 

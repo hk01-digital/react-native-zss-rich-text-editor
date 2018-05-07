@@ -61,6 +61,7 @@ export const actions = {
   setEditorHeight: 'SET_EDITOR_HEIGHT',
   setFooterHeight: 'SET_FOOTER_HEIGHT',
   setPlatform: 'SET_PLATFORM',
+  removeImageWithId: 'REMOVE_IMAGE_WITH_ID',
 };
 
 
