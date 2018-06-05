@@ -1593,6 +1593,10 @@
 				// move cursor to p
 				zss_editor.focusEditor(pAfterImageGroupContainerId)
 				zss_editor.enabledEditingItems();
+
+				if (showVideoThumbnail) {
+					zss_editor.triggerContentOnChange()
+				}
 			}
 
 			zss_editor.updateImageWithUrl = function(data) {
@@ -1603,6 +1607,8 @@
 
 				$('#'+insertedImageId).attr('src', url);
 				$('#'+insertedImageId).attr('mediaId', mediaId);
+
+				zss_editor.triggerContentOnChange()
 
 				zss_editor.removeDimFilter(localId)
 			}
@@ -1630,11 +1636,15 @@
 
 			zss_editor.enableOnChange = function() {
 				$('#zss_editor_content').on('input', function(){
-					WebViewBridge.send(JSON.stringify({
-						type: 'CONTENT_CHANGE',
-						data: {content: getHtml("zss_editor_content")}
-					}))
+					zss_editor.triggerContentOnChange()
 				});
+			}
+
+			zss_editor.triggerContentOnChange = function() {
+				WebViewBridge.send(JSON.stringify({
+					type: 'CONTENT_CHANGE',
+					data: {content: getHtml("zss_editor_content")}
+				}))
 			}
 
 			zss_editor.hideTitle = function() {
