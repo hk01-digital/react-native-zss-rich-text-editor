@@ -953,6 +953,7 @@
 				if (data.indexOf('imageContainer' >= 0)) {
 					$('#'+data).remove();
 				}
+				zss_editor.triggerContentOnChange()
 			}
 
 			function notifyIfSelectedTextHasChanged() {
