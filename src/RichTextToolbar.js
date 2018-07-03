@@ -64,6 +64,8 @@ type Props = {
 
 class RichTextToolbar extends Component {
   screenWidth: number
+  updateImageWithUrlTimer: any
+  uploadCompletedTimer: any
 
   static propTypes = {
     getEditor: PropTypes.func.isRequired,
@@ -98,6 +100,7 @@ class RichTextToolbar extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
+    // wait all images upload completed 
     if (!this.props.isCompleted && nextProps.isCompleted) {
 
       const editor = this.props.getEditor();
@@ -111,7 +114,8 @@ class RichTextToolbar extends Component {
         this.props.showToastr(I18n.t('ugcImageUploadFailedMessage', {count: failedList.length}), 'ERROR')
       }
       
-      setTimeout(() => {
+      // add delay to enable edit post header button after the url of last uploaded image is replaced in editor
+      this.uploadCompletedTimer = setTimeout(() => {
         this.props.onUploadCompleted && this.props.onUploadCompleted()
       }, clearImageDelay + 500)
     }
@@ -144,13 +148,18 @@ class RichTextToolbar extends Component {
       const editor = this.props.getEditor();
       
       // added delay to prevent updateImageWithUrl before inserted photo into editor 
-      setTimeout(() => {
+      this.updateImageWithUrlTimer = setTimeout(() => {
         editor.updateImageWithUrl(imgUrl, mediaId, imgLocalId)
 
         // clear image data to prevent re-render repeatly
         this.props.clearImageData()
       }, clearImageDelay)
     }
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.updateImageWithUrlTimer)
+    clearTimeout(this.uploadCompletedTimer)
   }
   
   getRows(actions, selectedItems) {
