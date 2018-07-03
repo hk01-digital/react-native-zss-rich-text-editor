@@ -9,6 +9,8 @@ import parse5 from 'react-native-parse-html'
 import I18n from 'react-native-i18n'
 import * as R from 'ramda'
 
+const clearImageDelay = 1000
+
 const defaultActions = [
   actions.insertImage,
   actions.setBold,
@@ -109,7 +111,9 @@ class RichTextToolbar extends Component {
         this.props.showToastr(I18n.t('ugcImageUploadFailedMessage', {count: failedList.length}), 'ERROR')
       }
       
-      this.props.onUploadCompleted && this.props.onUploadCompleted()
+      setTimeout(() => {
+        this.props.onUploadCompleted && this.props.onUploadCompleted()
+      }, clearImageDelay + 500)
     }
   }
 
@@ -145,7 +149,7 @@ class RichTextToolbar extends Component {
 
         // clear image data to prevent re-render repeatly
         this.props.clearImageData()
-      }, 1000)
+      }, clearImageDelay)
     }
   }
   

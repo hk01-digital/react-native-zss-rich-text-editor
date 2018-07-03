@@ -6,6 +6,7 @@ import {actions, messages} from './const';
 import {Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, PixelRatio, Keyboard, Dimensions, ScrollView} from 'react-native';
 import HTMLView from 'react-native-htmlview'
 import parse5 from 'react-native-parse-html'
+import * as R from 'ramda'
 
 const injectScript = `
   (function () {
@@ -334,6 +335,7 @@ export default class RichTextEditor extends Component {
   };
 
   _sendAction(action, data) {
+    if (R.isNil(this.webviewBridge)) return
     let jsonString = JSON.stringify({type: action, data});
     jsonString = this.escapeJSONString(jsonString);
     this.webviewBridge.sendToBridge(jsonString);
