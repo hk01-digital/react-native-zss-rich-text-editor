@@ -1609,9 +1609,9 @@
 				$('#'+insertedImageId).attr('src', url);
 				$('#'+insertedImageId).attr('mediaId', mediaId);
 
-				zss_editor.triggerContentOnChange()
-
 				zss_editor.removeDimFilter(localId)
+
+				zss_editor.triggerContentOnChange()
 			}
 
 			zss_editor.insertImageBase64String = function(imageBase64String, alt) {
