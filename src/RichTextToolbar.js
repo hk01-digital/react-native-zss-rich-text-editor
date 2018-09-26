@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ListView, View, TouchableOpacity, Image, StyleSheet, Dimensions, Platform} from 'react-native';
+import {ListView, View, TouchableOpacity, Image, StyleSheet, Dimensions, Platform, Text} from 'react-native';
 import {actions} from './const';
 import ImagePicker from 'react-native-image-crop-picker'
 import TextEditorRedux from '../../../node_modules/react-native-zss-rich-text-editor/Redux/TextEditorRedux'
@@ -55,7 +55,7 @@ type Props = {
   clearImageData: Function,
   imgLocalId: string,
   mediaId: string,
-  hasTags: boolean,
+  tagCount: number,
   imagePerRow: number,
   imageGapWidth: number,
   isCompleted: boolean,
@@ -196,21 +196,44 @@ class RichTextToolbar extends Component {
   _defaultRenderAction(action, selected) {
     const icon = this._getButtonIcon(action);
     let view = null
-    const shouldShowUnderline = action === actions.hashTag && this.props.hasTags
-    const style = shouldShowUnderline? [styles.toolbarBtnUnderline, styles.toolbarBtnUnderlineColor] : styles.toolbarBtnUnderline
+    
+    return ( action === actions.hashTag ? 
+      this.renderTagLabel(action, selected) : (
+        <TouchableOpacity
+            key={action}
+            style={[
+              styles.toolbarBtn,
+              selected ? this._getButtonSelectedStyle() : this._getButtonUnselectedStyle()
+            ]}
+            onPress={() => this._onPress(action)}
+          >
+          <View style={styles.btnImageContainer}>
+            {icon ? <Image source={icon} style={{tintColor: selected ? this.props.selectedIconTint : this.props.iconTint}}/> : null}
+          </View>
+        </TouchableOpacity>
+      )
+    );
+  }
+
+  renderTagLabel = (action, selected) => {
+    const hasTags = this.props.tagCount > 0
+
+    const text = hasTags? "# " + I18n.t('ugcTagCount', { tagCount: this.props.tagCount }) : 
+      "# " + I18n.t('ugcAddTag')
+    
     return (
       <TouchableOpacity
           key={action}
-          style={[
-            styles.toolbarBtn,
-            selected ? this._getButtonSelectedStyle() : this._getButtonUnselectedStyle()
-          ]}
+          style={ hasTags? styles.hasTags : styles.noTags }
           onPress={() => this._onPress(action)}
       >
-        <View style={styles.btnImageContainer}>
-          {icon ? <Image source={icon} style={{tintColor: selected ? this.props.selectedIconTint : this.props.iconTint}}/> : null}
-        </View>
-        <View style={style}></View>
+        <Text style={
+          hasTags? styles.hasTagsText : styles.noTagsText
+        }>
+          {
+            text
+          }
+        </Text>
       </TouchableOpacity>
     );
   }
@@ -389,12 +412,9 @@ class RichTextToolbar extends Component {
       <View
           style={[styles.container, this.props.style]}
       >
-        <View>
-          <View style={styles.toolbarUpperline}/>
-          <View style={styles.toolbarRow}>
-            {this._renderActionBtnContainer(leftActions)}
-            {this._renderActionBtnContainer(this.props.isGridView? rightActions : rightActionsWithVideo)}
-          </View>
+        <View style={styles.toolbarRow}>
+          {this._renderActionBtnContainer(leftActions)}
+          {this._renderActionBtnContainer(this.props.isGridView? rightActions : rightActionsWithVideo)}
         </View>
       </View>
     );
@@ -491,29 +511,29 @@ const styles = StyleSheet.create({
   container: {
     height: 50, 
     backgroundColor: 'white', 
+    borderTopWidth: 1,
+    borderColor: 'rgb(230, 233, 235)'
   },  
   toolbarRow: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center'
   }, 
   toolbarBtnContainer: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
   }, 
-  toolbarUpperline: {
-    height: 1,
-    backgroundColor: 'rgb(230, 233, 235)'
-  },
   toolbarBtn: {
     height: 50, 
     width: 50, 
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   btnImageContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 6,
   },
   toolbarBtnUnderline: {
     height: 5,
@@ -526,6 +546,32 @@ const styles = StyleSheet.create({
     backgroundColor: 'red'
   },
   defaultUnselectedButton: {},
+  noTags: {
+    height: 24,
+    borderWidth: 1,
+    borderRadius: 12,
+    borderColor: 'rgb(200,210,220)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  noTagsText: {
+    fontSize: 14,
+    color: 'rgba(26, 30, 40, 0.48)',
+    marginHorizontal: 12
+  },
+  hasTags: {
+    height: 24,
+    borderWidth: 1,
+    borderRadius: 12,
+    borderColor: 'rgb(23,69,239)',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  hasTagsText: {
+    fontSize: 14,
+    color: 'rgb(23,69,239)',
+    marginHorizontal: 12
+  },
 });
 
 const mapDispatchToProps = dispatch => {
