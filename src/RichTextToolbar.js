@@ -220,8 +220,7 @@ class RichTextToolbar extends Component {
 
     const text = hasTags? "# " + I18n.t('ugcTagCount', { tagCount: this.props.tagCount }) : 
       "# " + I18n.t('ugcAddTag')
-      
-    console.log('tagCount :', this.props.tagCount, ' text :', text)
+    
     return (
       <TouchableOpacity
           key={action}
