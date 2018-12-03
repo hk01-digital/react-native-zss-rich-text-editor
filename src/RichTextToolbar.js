@@ -319,32 +319,20 @@ class RichTextToolbar extends Component {
     // settimeout is needed by ios to ensure insert success
     if (Platform.OS === 'ios') {
       setTimeout(() => {
-        images.reverse().map(image => {
-          this.insertAndUploadImage(
-            image,
-            editor,
-            this.randomIdentifier(),
-            groupId,
-            image.path,
-            image.data,
-            image.width,
-            image.height
-          )
-        })
-      }, 100)
-    } else {
-      images.reverse().map(image => {
-        this.insertAndUploadImage(
-          image,
+        this.insertAndUploadImages(
+          images,
           editor,
           this.randomIdentifier(),
           groupId,
-          image.path,
-          image.data,
-          image.width,
-          image.height
         )
-      })
+      }, 100)
+    } else {
+      this.insertAndUploadImages(
+        images,
+        editor,
+        this.randomIdentifier(),
+        groupId,
+      )
     }
   }
 
@@ -400,6 +388,56 @@ class RichTextToolbar extends Component {
       }
       editor.insertImage(image, closeImageData)
     }
+  }
+
+  insertAndUploadImages = (
+    images: [],
+    editor: Object,
+    localId: string,
+    groupId: string
+  ) => {
+
+    images.map(image => {
+      image.localId = localId
+      // GridView only need 1 image group container
+      image.groupId = this.props.isGridView? '0' : groupId
+  
+      image.src = 'data:image/png;base64,' + image.data
+      image.originalWidth = image.width
+      image.originalHeight = image.height
+      image.data = undefined
+      image.height = undefined
+
+      // Handling for android
+      if (!image.filename) {
+        image.filename = image.path.substring(image.path.lastIndexOf('/')+1, image.path.length)
+      }
+      if (!image.sourceURL) {
+        image.sourceURL = image.path
+      }
+      // temp fix, since this is required by api at the moment, although it seems it is not used anywhere
+      if (!image.mediaId) {
+        image.mediaId = image.localId
+      }
+
+      // all prop of image here will be passed as prop of <img> in webview
+      if (this.props.isGridView) {
+        image = {
+          ...image,
+          width: '100%',
+          height: '100%',
+        }
+        editor.insertImageIntoGrid(image, closeImageData)
+      } else {
+        image = {
+          ...image,
+          width: '100%',
+        }
+        editor.insertImage(image, closeImageData)
+      }
+    })
+
+    this.props.uploadImage(images);
   }
 
   randomIdentifier = () => {

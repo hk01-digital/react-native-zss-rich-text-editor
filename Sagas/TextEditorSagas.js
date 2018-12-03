@@ -1,4 +1,4 @@
-import { call, put } from 'redux-saga/effects'
+import { call, put, all } from 'redux-saga/effects'
 import { delay } from 'redux-saga'
 import TextEditorActions from '../Redux/TextEditorRedux'
 
@@ -15,18 +15,19 @@ export function * uploadImage (api, { images }) {
     const imgLocalId = prop('localId', images[0])
 
     if (response.ok && Array.isArray(imageResponse)) {
-      const imageInfo = imageResponse.length > 0? imageResponse[0] : {}
-      let imgUrls = []
-  
-      const imgUrl = prop('url', imageInfo)
-      const mediaId = prop('mediaId', imageInfo)
-
-      yield put(
-        TextEditorActions.textEditorSuccess(
-          imgUrl,
-          mediaId,
-          imgLocalId
-        )
+      yield all(
+        imageResponse.map(image => {
+          const imgUrl = prop('url', image)
+          const mediaId = prop('mediaId', image)
+    
+          return put(
+            TextEditorActions.textEditorSuccess(
+              imgUrl,
+              mediaId,
+              imgLocalId
+            )
+          )
+        })
       )
     } else {
       const errorCodes = pathOr([], ['data', 'errors'], response)
