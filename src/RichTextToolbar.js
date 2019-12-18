@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {ListView, View, TouchableOpacity, Image, StyleSheet, Dimensions, Platform, Text} from 'react-native';
+import {View, TouchableOpacity, Image, StyleSheet, Dimensions, Platform, Text} from 'react-native';
 import {actions} from './const';
 import ImagePicker from 'react-native-image-crop-picker'
 import TextEditorRedux from '../../../node_modules/react-native-zss-rich-text-editor/Redux/TextEditorRedux'
@@ -94,8 +94,7 @@ class RichTextToolbar extends Component {
     this.state = {
       editor: undefined,
       selectedItems: [],
-      actions,
-      ds: new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.getRows(actions, []))
+      actions
     };
   }
 
@@ -124,8 +123,7 @@ class RichTextToolbar extends Component {
   componentDidReceiveProps(newProps) {
     const actions = newProps.actions ? newProps.actions : defaultActions;
     this.setState({
-      actions,
-      ds: this.state.ds.cloneWithRows(this.getRows(actions, this.state.selectedItems))
+      actions
     });
   }
 
@@ -169,8 +167,7 @@ class RichTextToolbar extends Component {
   setSelectedItems(selectedItems) {
     if (selectedItems !== this.state.selectedItems) {
       this.setState({
-        selectedItems,
-        ds: this.state.ds.cloneWithRows(this.getRows(this.state.actions, selectedItems))
+        selectedItems
       });
     }
   }
