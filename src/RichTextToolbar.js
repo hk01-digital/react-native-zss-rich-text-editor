@@ -98,7 +98,7 @@ class RichTextToolbar extends Component {
     };
   }
 
-  componentWillReceiveProps (nextProps) {
+  UNSAFE_componentWillReceiveProps (nextProps) {
     // wait all images upload completed 
     if (!this.props.isCompleted && nextProps.isCompleted) {
 

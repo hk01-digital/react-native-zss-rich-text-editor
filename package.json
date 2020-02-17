@@ -27,8 +27,7 @@
   "bundleDependencies": false,
   "dependencies": {
     "react-native-htmlview": "^0.12.1",
-    "react-native-parse-html": "^2.2.6",
-    "react-native-webview-bridge-updated": "^1.0.0"
+    "react-native-parse-html": "^2.2.6"
   },
   "deprecated": false,
   "description": "React Native Wrapper for ZSSRichTextEditor",
@@ -38,7 +37,8 @@
   "name": "react-native-zss-rich-text-editor",
   "peerDependencies": {
     "react": "*",
-    "react-native": ">=0.31.0"
+    "react-native": ">=0.61.0",
+    "react-native-webview": "^8.0.1"
   },
   "repository": {
     "type": "git",

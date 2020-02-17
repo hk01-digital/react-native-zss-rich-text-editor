@@ -853,7 +853,7 @@
 						title: anchor.text(),
 						url: anchor.attr('href')
 					};
-					WebViewBridge.send(JSON.stringify({type: 'LINK_TOUCHED', data: link}))
+					ReactNativeWebView.postMessage(JSON.stringify({type: 'LINK_TOUCHED', data: link}))
 				});
 			}
 
@@ -919,7 +919,7 @@
 					if (nodeName === "input") {
 						var id = e.target.id;
 						if (id == addImageButtonId) {
-							WebViewBridge.send(JSON.stringify({type: 'ADD_IMAGE_BUTTON_ONPRESS'}))
+							ReactNativeWebView.postMessage(JSON.stringify({type: 'ADD_IMAGE_BUTTON_ONPRESS'}))
 						}
 					}
 				});
@@ -942,7 +942,7 @@
 				// zss_editor.focusContent();
 
 				setTimeout(function() {
-					WebViewBridge.send(JSON.stringify({type: 'ZSS_INITIALIZED'}))
+					ReactNativeWebView.postMessage(JSON.stringify({type: 'ZSS_INITIALIZED'}))
 				}, 20);
 			}//end
 
@@ -963,7 +963,7 @@
 				});
 
 				if (selectedTextChangeMessage !== zss_editor.previousSelectedTextChangeMessage) {
-					WebViewBridge.send(selectedTextChangeMessage);
+					ReactNativeWebView.postMessage(selectedTextChangeMessage);
 					zss_editor.previousSelectedTextChangeMessage = selectedTextChangeMessage;
 				}
 			}
@@ -1018,13 +1018,13 @@
 
 			// This will show up in the XCode console as we are able to push this into an NSLog.
 			zss_editor.debug = function(msg) {
-				WebViewBridge.send(JSON.stringify({type: 'LOG', data: msg}));
+				ReactNativeWebView.postMessage(JSON.stringify({type: 'LOG', data: msg}));
 			}
 
 
 			zss_editor.setScrollPosition = function() {
 				var position = window.pageYOffset;
-				WebViewBridge.send(JSON.stringify({type: 'SCROLL', data: position}));
+				ReactNativeWebView.postMessage(JSON.stringify({type: 'SCROLL', data: position}));
 			}
 
 			function setPlaceholder(editorId, placeholder) {
@@ -1532,7 +1532,7 @@
 				zss_editor.focusEditor(pAfterImageGroupContainerId)
 				zss_editor.enabledEditingItems();
 
-				WebViewBridge.send(JSON.stringify({type: 'INSERTED_IMAGE'}));
+				ReactNativeWebView.postMessage(JSON.stringify({type: 'INSERTED_IMAGE'}));
 
 				zss_editor.updateGridViewWithSize(calibratedWidth, calibratedHeight);
 			}
@@ -1642,7 +1642,7 @@
 			}
 
 			zss_editor.triggerContentOnChange = function() {
-				WebViewBridge.send(JSON.stringify({
+				ReactNativeWebView.postMessage(JSON.stringify({
 					type: 'CONTENT_CHANGE',
 					data: {content: getHtml("zss_editor_content")}
 				}))
@@ -1833,7 +1833,7 @@
 				});
 
 				if (selectionChangeMessage !== zss_editor.previousSelectionChangeMessage) {
-					WebViewBridge.send(selectionChangeMessage);
+					ReactNativeWebView.postMessage(selectionChangeMessage);
 					zss_editor.previousSelectionChangeMessage = selectionChangeMessage;
 				}
 			}
@@ -1891,13 +1891,13 @@
 
 			zss_editor.setTitleFocusHandler = function() {
 				addFocusEvent('zss_editor_title', function() {
-					WebViewBridge.send(JSON.stringify({type: 'TITLE_FOCUSED'}))
+					ReactNativeWebView.postMessage(JSON.stringify({type: 'TITLE_FOCUSED'}))
 				});
 			}
 
 			zss_editor.setContentFocusHandler = function() {
 				addFocusEvent('zss_editor_content', function() {
-					WebViewBridge.send(JSON.stringify({type: 'CONTENT_FOCUSED'}))
+					ReactNativeWebView.postMessage(JSON.stringify({type: 'CONTENT_FOCUSED'}))
 				});
 			}
 
