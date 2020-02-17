@@ -1,18 +1,12 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import WebViewBridge from 'react-native-webview-bridge-updated';
-import {InjectedMessageHandler} from './WebviewMessageHandler';
+import WebView from 'react-native-webview';
+import {MessageConverter} from './WebviewMessageHandler';
 import {actions, messages} from './const';
 import {Modal, View, Text, StyleSheet, TextInput, TouchableOpacity, Platform, PixelRatio, Keyboard, Dimensions, ScrollView} from 'react-native';
 import HTMLView from 'react-native-htmlview'
 import parse5 from 'react-native-parse-html'
 import * as R from 'ramda'
-
-const injectScript = `
-  (function () {
-    ${InjectedMessageHandler}
-  }());
-`;
 
 const PlatformIOS = Platform.OS === 'ios';
 
@@ -40,7 +34,7 @@ export default class RichTextEditor extends Component {
     super(props);
     this._sendAction = this._sendAction.bind(this);
     this.registerToolbar = this.registerToolbar.bind(this);
-    this.onBridgeMessage = this.onBridgeMessage.bind(this);
+    this.onMessage = this.onMessage.bind(this);
     this._onKeyboardWillShow = this._onKeyboardWillShow.bind(this);
     this._onKeyboardWillHide = this._onKeyboardWillHide.bind(this);
     this.state = {
@@ -55,7 +49,7 @@ export default class RichTextEditor extends Component {
     this._selectedTextChangeListeners = [];
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if(PlatformIOS) {
       this.keyboardEventListeners = [
         Keyboard.addListener('keyboardWillShow', this._onKeyboardWillShow),
@@ -100,7 +94,8 @@ export default class RichTextEditor extends Component {
     this.setEditorHeight(editorAvailableHeight);
   }
   
-  onBridgeMessage(str){
+  onMessage({ nativeEvent }){
+    const { data: str } = nativeEvent;
     try {
       const message = JSON.parse(str);
 
@@ -158,8 +153,8 @@ export default class RichTextEditor extends Component {
           }
           this.setTitlePlaceholder(this.props.titlePlaceholder);
           this.setContentPlaceholder(this.props.contentPlaceholder);
-          this.setTitleHTML(this.props.initialTitleHTML);
-          this.setContentHTML(this.props.initialContentHTML);
+          this.setTitleHTML(this.props.initialTitleHTML || '');
+          this.setContentHTML(this.props.initialContentHTML || '');
 
           this.props.hiddenTitle && this.hideTitle();
           this.props.enableOnChange && this.enableOnChange();
@@ -176,7 +171,7 @@ export default class RichTextEditor extends Component {
           console.log('FROM ZSS', message.data);
           break;
         case messages.SCROLL:
-          this.webviewBridge.setNativeProps({contentOffset: {y: message.data}});
+          this.webview.setNativeProps({contentOffset: {y: message.data}});
           break;
         case messages.TITLE_FOCUSED:
           this.titleFocusHandler && this.titleFocusHandler();
@@ -306,13 +301,12 @@ export default class RichTextEditor extends Component {
     const pageSource = PlatformIOS ? require('./editor.html') : { uri: 'file:///android_asset/editor.html' };
     return (
       <View style={{flex: 1}}>
-        <WebViewBridge
+        <WebView
           {...this.props}
           hideKeyboardAccessoryView={true}
           keyboardDisplayRequiresUserAction={false}
-          ref={(r) => {this.webviewBridge = r}}
-          onBridgeMessage={(message) => this.onBridgeMessage(message)}
-          injectedJavaScript={injectScript}
+          ref={(r) => {this.webview = r}}
+          onMessage={(message) => this.onMessage(message)}
           source={pageSource}
           onLoad={() => this.init()}
         />
@@ -334,11 +328,18 @@ export default class RichTextEditor extends Component {
       .replace(/[\t]/g, '\\t');
   };
 
+  dataToString = (data) => {
+    if( data instanceof Object){
+      return JSON.stringify(data)
+    }
+    return data
+  }
+
   _sendAction(action, data) {
-    if (R.isNil(this.webviewBridge)) return
-    let jsonString = JSON.stringify({type: action, data});
-    jsonString = this.escapeJSONString(jsonString);
-    this.webviewBridge.sendToBridge(jsonString);
+    if (R.isNil(this.webview)) return
+    const dataStr = this.dataToString(data)
+    let jsToBeExecutedOnPage = MessageConverter({ type: action, data: dataStr });
+    this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
   }
 
   //-------------------------------------------------------------------------------
