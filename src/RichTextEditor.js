@@ -336,10 +336,12 @@ export default class RichTextEditor extends Component {
   }
 
   _sendAction(action, data) {
-    if (R.isNil(this.webview)) return
-    const dataStr = this.dataToString(data)
-    let jsToBeExecutedOnPage = MessageConverter({ type: action, data: dataStr });
-    this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
+    setTimeout(() => {
+      if (R.isNil(this.webview)) return
+      const dataStr = this.dataToString(data)
+      let jsToBeExecutedOnPage = MessageConverter({ type: action, data: dataStr });
+      this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
+    }, 500)
   }
 
   //-------------------------------------------------------------------------------
