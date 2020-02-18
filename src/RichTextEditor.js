@@ -336,12 +336,10 @@ export default class RichTextEditor extends Component {
   }
 
   _sendAction(action, data) {
-    setTimeout(() => {
-      if (R.isNil(this.webview)) return
-      const dataStr = this.dataToString(data)
-      let jsToBeExecutedOnPage = MessageConverter({ type: action, data: dataStr });
-      this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
-    }, 500)
+    if (R.isNil(this.webview)) return
+    const dataStr = this.dataToString(data)
+    let jsToBeExecutedOnPage = MessageConverter({ type: action, data: dataStr });
+    this.webview.injectJavaScript(jsToBeExecutedOnPage + ';true;');
   }
 
   //-------------------------------------------------------------------------------
@@ -584,11 +582,13 @@ export default class RichTextEditor extends Component {
   }
 
   init() {
-    this._sendAction(actions.init);
-    this.setPlatform();
-    if (this.props.footerHeight) {
-      this.setFooterHeight();
-    }
+    setTimeout(() => {
+      this._sendAction(actions.init);
+      this.setPlatform();
+      if (this.props.footerHeight) {
+        this.setFooterHeight();
+      }
+    }, 2000);
   }
 
   setEditorHeight(height) {
