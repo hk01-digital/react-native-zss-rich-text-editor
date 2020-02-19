@@ -67,14 +67,18 @@ export default class RichTextEditor extends Component {
     this.keyboardEventListeners.forEach((eventListener) => eventListener.remove());
   }
 
+  componentDidUpdate(prevProps, prevState){
+    const { keyboardHeight } = this.state
+    if( keyboardHeight !== prevState.keyboardHeight){
+      this.setEditorAvailableHeightBasedOnKeyboardHeight(keyboardHeight);
+    }
+  }
+
   _onKeyboardWillShow(event) {
     console.log('!!!!', event);
     const newKeyboardHeight = event.endCoordinates.height;
     if (this.state.keyboardHeight === newKeyboardHeight) {
       return;
-    }
-    if (newKeyboardHeight) {
-      this.setEditorAvailableHeightBasedOnKeyboardHeight(newKeyboardHeight);
     }
     this.setState({keyboardHeight: newKeyboardHeight});
   }
