@@ -120,7 +120,7 @@ class RichTextToolbar extends Component {
     }
   }
 
-  componentDidReceiveProps(newProps) {
+  componentDidUpdate(newProps) {
     const actions = newProps.actions ? newProps.actions : defaultActions;
     this.setState({
       actions

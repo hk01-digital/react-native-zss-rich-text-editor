@@ -1089,14 +1089,18 @@
 			}
 
 			zss_editor.backuprange = function(){
-				var selection = window.getSelection();
-				var range = selection.getRangeAt(0);
-				zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};
+				var selection = window.getSelection()
+				if(Object.keys(selection).length !== 0){
+					var range = selection.getRangeAt(0);
+					zss_editor.currentSelection = {"startContainer": range.startContainer, "startOffset":range.startOffset,"endContainer":range.endContainer, "endOffset":range.endOffset};				
+				}
 			}
 
 			zss_editor.restorerange = function(){
 				var selection = window.getSelection();
-				selection.removeAllRanges();
+				if(Object.keys(selection).length !== 0){
+					selection.removeAllRanges();
+				}
 				var range = document.createRange();
 				if (zss_editor.currentSelection) {
 					range.setStart(zss_editor.currentSelection.startContainer, zss_editor.currentSelection.startOffset);
