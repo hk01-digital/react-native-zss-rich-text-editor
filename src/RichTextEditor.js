@@ -68,10 +68,6 @@ export default class RichTextEditor extends Component {
   }
 
   componentDidUpdate(prevProps, prevState){
-    const { keyboardHeight } = this.state
-    if( keyboardHeight !== prevState.keyboardHeight){
-      this.setEditorAvailableHeightBasedOnKeyboardHeight(keyboardHeight);
-    }
   }
 
   _onKeyboardWillShow(event) {
@@ -590,6 +586,8 @@ export default class RichTextEditor extends Component {
   }
 
   init() {
+    const { keyboardHeight } = this.state
+    this.setEditorAvailableHeightBasedOnKeyboardHeight(keyboardHeight);
     this._sendAction(actions.init);
     this.setPlatform();
     if (this.props.footerHeight) {

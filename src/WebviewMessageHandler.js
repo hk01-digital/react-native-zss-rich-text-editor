@@ -103,7 +103,7 @@ export const MessageConverter = (action) => {
     case `${actions.setBackgroundColor}`:
       return `zss_editor.setBackgroundColor('${action.data}');`;
     case `${actions.setEditorHeight}`:
-      return `zss_editor.setEditorHeight('${action.data}');`;
+      return `zss_editor.setEditorHeight(${action.data});`;
     case `${actions.setFooterHeight}`:
       return `zss_editor.setFooterHeight('${action.data}');`;
     case `${actions.setTitleFocusHandler}`:
