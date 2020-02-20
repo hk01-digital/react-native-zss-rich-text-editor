@@ -309,6 +309,7 @@ export default class RichTextEditor extends Component {
           onMessage={(message) => this.onMessage(message)}
           source={pageSource}
           onLoad={() => this.init()}
+          originWhitelist={['*']}
         />
         {this._renderLinkModal()}
       </View>
@@ -329,13 +330,15 @@ export default class RichTextEditor extends Component {
   };
 
   dataToString = (data) => {
-    if( data instanceof Object){
+    const dataType = typeof data
+    if(dataType === 'string'){
+      return this.escapeJSONString(data)
+    }else if(dataType === 'object'){
       return JSON.stringify(data)
     }
-    return this.escapeJSONString(data)
+    return data
   }
-
-
+  
   _sendAction(action, data) {
     if (R.isNil(this.webview)) return
 
